@@ -1,28 +1,51 @@
 import { action } from "./_generated/server";
-import { OpenAI } from "openai";
 import { api } from "./_generated/api";
+import { pollReplicatePrediction } from "./utils/pollReplicatePrediction";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
-const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN!;
 const CLIP_MODEL_VERSION = "1c0371070cb827ec3c7f2f28adcdde54b50dcd239aa6faea0bc98b174ef03fb4";
 
 export const seedFromFakeStore = action(async (ctx) => {
+  // Fetch products from an example API
   const res = await fetch("https://fakestoreapi.com/products");
   const products = await res.json();
-  const productsToSeed = products.slice(0, 20);
 
-  for (const product of productsToSeed) {
-    const embeddingRes = await openai.embeddings.create({
-      input: product.description,
-      model: "text-embedding-3-small",
-    });
-    const embedding = embeddingRes.data[0].embedding;
+  for (const product of products) {
+    // Wait 5 seconds between each product to avoid rate limiting
+    await new Promise((res) => setTimeout(res, 5000));
 
-    // STEP 1 – Chiamata a Replicate
-    const predictionRes = await fetch("https://api.replicate.com/v1/predictions", {
+    console.log(`Processing product ${product.title}`);
+
+    // Generate description embedding via Replicate CLIP
+    const textPredictionRes = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
       headers: {
-        Authorization: `Token ${REPLICATE_API_TOKEN}`,
+        Authorization: `Token ${process.env.REPLICATE_API_TOKEN!}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        version: CLIP_MODEL_VERSION,
+        input: {
+          text: product.description,
+          task: "embed_text",
+        },
+      }),
+    });
+    const textPrediction = await textPredictionRes.json();
+
+    const { status: textStatus, output: textResult } = await pollReplicatePrediction(
+      textPrediction.id,
+      process.env.REPLICATE_API_TOKEN!
+    );
+    if (textStatus !== "succeeded") {
+      throw new Error("Error generating text embedding");
+    }
+    const embedding = textResult.embedding;
+
+    // Generate image embedding via Replicate CLIP
+    const imagePredictionRes = await fetch("https://api.replicate.com/v1/predictions", {
+      method: "POST",
+      headers: {
+        Authorization: `Token ${process.env.REPLICATE_API_TOKEN!}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -33,31 +56,18 @@ export const seedFromFakeStore = action(async (ctx) => {
         },
       }),
     });
+    const imagePrediction = await imagePredictionRes.json();
 
-    const prediction = await predictionRes.json();
-
-    // STEP 2 – Polling finché non termina
-    let status = prediction.status;
-    let result;
-    while (status === "starting" || status === "processing") {
-      await new Promise((res) => setTimeout(res, 1000));
-      const check = await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
-        headers: {
-          Authorization: `Token ${REPLICATE_API_TOKEN}`,
-        },
-      });
-      const checkJson = await check.json();
-      status = checkJson.status;
-      result = checkJson.output;
+    const { status: imageStatus, output: imageResult } = await pollReplicatePrediction(
+      imagePrediction.id,
+      process.env.REPLICATE_API_TOKEN!
+    );
+    if (imageStatus !== "succeeded") {
+      throw new Error("Error generating image embedding");
     }
+    const imageEmbedding = imageResult.embedding;
 
-    if (status !== "succeeded") {
-      throw new Error("Errore nel generare embedding immagine");
-    }
-
-    // STEP 3 – Salva embedding nel prodotto
-    const imageEmbedding = result.embedding;
-
+    // Save product to database
     await ctx.runMutation(api.products.insertProduct, {
       title: product.title,
       description: product.description,
@@ -67,5 +77,5 @@ export const seedFromFakeStore = action(async (ctx) => {
     });
   }
 
-  return "Seed completato!";
+  return "Seed completed!";
 });

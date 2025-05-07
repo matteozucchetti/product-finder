@@ -16,6 +16,8 @@ import type {
 import type * as products from "../products.js";
 import type * as search from "../search.js";
 import type * as seed from "../seed.js";
+import type * as utils_cosineSimilarity from "../utils/cosineSimilarity.js";
+import type * as utils_pollReplicatePrediction from "../utils/pollReplicatePrediction.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -29,6 +31,8 @@ declare const fullApi: ApiFromModules<{
   products: typeof products;
   search: typeof search;
   seed: typeof seed;
+  "utils/cosineSimilarity": typeof utils_cosineSimilarity;
+  "utils/pollReplicatePrediction": typeof utils_pollReplicatePrediction;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
