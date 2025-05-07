@@ -1,10 +1,6 @@
-import { query } from "convex/server";
-import { internalAction } from "convex/server";
-import { api, internal } from "./_generated/api";
+import { query } from "./_generated/server";
 import { v } from "convex/values";
 import { OpenAI } from "openai";
-import { internalMutation } from "convex/server";
-import { Doc, Id } from "./_generated/dataModel";
 
 // Carica la chiave da variabile d’ambiente
 const openai = new OpenAI({
