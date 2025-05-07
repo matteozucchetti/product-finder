@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useAction, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
+import { Input } from "./components/ui/input";
+import { Button } from "./components/ui/button";
+import { Card, CardTitle, CardContent } from "./components/ui/card";
 
 export default function App() {
   const [prompt, setPrompt] = useState("");
@@ -19,7 +22,7 @@ export default function App() {
     } else {
       setResults(null);
     }
-  };
+  }
 
   function handleClear() {
     setPrompt("");
@@ -27,49 +30,63 @@ export default function App() {
   }
 
   return (
-    <div className="p-4 mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Product finder</h1>
+    <div className="p-4 mx-auto flex flex-col gap-4">
+      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">Product finder</h1>
+
+      <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
+        Search for products by image with AI
+      </h2>
+
+      <p className="text-sm text-muted-foreground">
+        How it works:
+      </p>
+      <ul className="ml-6 list-disc [&>li]:mt-2 text-sm text-muted-foreground">
+        <li>Below you can find a list of some sample products.</li>
+        <li>You can search for products by writing a prompt describing the product you are looking for.</li>
+        <li>AI will convert your prompt into a search query and return a list of products that match your search with a score.</li>
+      </ul>
 
       <div className="flex gap-2 mb-4">
-        <input
+        <Input
           type="text"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Red T-shirt for women"
-          className="flex-1 border p-2 rounded"
+          className="flex-1"
         />
-        <button
+        <Button
           onClick={handleSearch}
-          className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
           disabled={isLoading}
         >
           {isLoading ? "Searching..." : "Search"}
-        </button>
+        </Button>
         {results && (
-          <button
+          <Button
             onClick={handleClear}
-            className="bg-red-600 text-white px-4 py-2 rounded cursor-pointer"
+            variant="destructive"
           >
             Clear
-          </button>
+          </Button>
         )}
       </div>
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {(results ?? allProducts).map((product) => (
-          <div key={product._id} className="border p-4 rounded shadow">
-            <img
-              src={product.imageUrl}
-              alt={product.title}
-              className="w-full h-40 object-contain mb-2"
-            />
-            <h2 className="font-semibold">{product.title}</h2>
-            {results && (
-              <div className="text-xs text-gray-500 mt-2 space-y-1">
-                <p>🎯 Score: {product.similarity?.toFixed(3)}</p>
-              </div>
-            )}
-          </div>
+          <Card key={product._id} className="p-0">
+            <CardContent className="p-4 flex flex-col items-center">
+              <img
+                src={product.imageUrl}
+                alt={product.title}
+                className="w-full h-40 object-contain mb-4"
+              />
+              <CardTitle className="font-semibold w-full">{product.title}</CardTitle>
+              {results && (
+                <div className="text-xs text-gray-500 mt-2 space-y-1">
+                  <p>🎯 Score: {product.similarity?.toFixed(3)}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>
