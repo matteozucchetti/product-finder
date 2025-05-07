@@ -38,14 +38,14 @@ export default function App() {
       </h2>
 
       <p className="text-sm text-muted-foreground">
-        Here’s how it works:
+        Here's how it works:
       </p>
       <ul className="ml-6 list-disc [&>li]:mt-2 text-sm text-muted-foreground">
-        <li>You’ll see a list of sample products below coming from a one-time initial import.</li>
-        <li>Type in a prompt describing what you’re looking for (e.g. “Women's red T-shirt”).</li>
+        <li>You'll see a list of sample products below coming from a one-time initial import.</li>
+        <li>Type in a prompt describing what you're looking for (e.g. "Women's red T-shirt").</li>
         <li>The app is using a CLIP model running on Replicate</li>
         <li>The model converts both your text prompt and each product image into high-dimensional vectors (embeddings).</li>
-        <li>These vectors are compared using cosine similarity to measure how “close” they are in meaning and appearance.</li>
+        <li>These vectors are compared using cosine similarity to measure how "close" they are in meaning and appearance.</li>
         <li>The products are then ranked by similarity score (from 0 to 1), and the top results are shown.</li>
       </ul>
 
@@ -74,23 +74,29 @@ export default function App() {
       </div>
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {(results ?? allProducts).map((product) => (
-          <Card key={product._id} className="p-0">
-            <CardContent className="p-4 flex flex-col items-center">
-              <img
-                src={product.imageUrl}
-                alt={product.title}
-                className="w-full h-40 object-contain mb-4"
-              />
-              <CardTitle className="font-semibold w-full">{product.title}</CardTitle>
-              {results && (
-                <div className="text-xs text-gray-500 mt-2 space-y-1">
-                  <p>🎯 Score: {product.similarity?.toFixed(3)}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+        {results && results.length === 0 ? (
+          <div className="col-span-full text-center text-muted-foreground py-12">
+            No products found for your search.
+          </div>
+        ) : (
+          (results ?? allProducts).map((product) => (
+            <Card key={product._id} className="p-0">
+              <CardContent className="p-4 flex flex-col items-center">
+                <img
+                  src={product.imageUrl}
+                  alt={product.title}
+                  className="w-full h-40 object-contain mb-4"
+                />
+                <CardTitle className="font-semibold w-full">{product.title}</CardTitle>
+                {results && (
+                  <div className="text-xs text-gray-500 mt-2 space-y-1">
+                    <p>🎯 Score: {product.similarity?.toFixed(3)}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );

@@ -49,6 +49,7 @@ export const searchProducts = action({
           similarity: score,
         };
       })
+      .filter((product: Product) => (product.similarity ?? 0) > 0.15)
       .sort((a, b) => (b.similarity ?? 0) - (a.similarity ?? 0))
       .slice(0, 5);
 
