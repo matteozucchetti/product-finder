@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAction } from "convex/react";
+import { useAction, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 
 export default function App() {
@@ -7,6 +7,7 @@ export default function App() {
   const [results, setResults] = useState<any[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const searchProducts = useAction(api.search.searchProducts);
+  const allProducts = useQuery(api.products.getAllProducts) ?? [];
 
   const handleSearch = async () => {
     if (prompt) {
@@ -14,11 +15,13 @@ export default function App() {
       const res = await searchProducts({ prompt });
       setResults(res);
       setIsLoading(false);
+    } else {
+      setResults(null);
     }
   };
 
   return (
-    <div className="p-4 max-w-xl mx-auto">
+    <div className="p-4 mx-auto">
       <h1 className="text-2xl font-bold mb-4">Trova il prodotto perfetto</h1>
 
       <div className="flex gap-2 mb-4">
@@ -38,10 +41,9 @@ export default function App() {
         </button>
       </div>
 
-      {results && (
-        <div className="grid gap-4">
-          {results.map((product) => (
-            <div key={product._id} className="border p-4 rounded shadow">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {(results ?? allProducts).map((product) => (
+          <div key={product._id} className="border p-4 rounded shadow">
             <img
               src={product.imageUrl}
               alt={product.title}
@@ -49,16 +51,16 @@ export default function App() {
             />
             <h2 className="font-semibold">{product.title}</h2>
             <p className="text-sm text-gray-600">{product.description}</p>
-
-            <div className="text-xs text-gray-500 mt-2 space-y-1">
-              <p>🧠 Testo: {product.textScore?.toFixed(3)}</p>
-              <p>🖼️ Immagine: {product.imageScore?.toFixed(3)}</p>
-              <p>🎯 Totale: {product.similarity?.toFixed(3)}</p>
-            </div>
+            {results && (
+              <div className="text-xs text-gray-500 mt-2 space-y-1">
+                <p>🧠 Testo: {product.textScore?.toFixed(3)}</p>
+                <p>🖼️ Immagine: {product.imageScore?.toFixed(3)}</p>
+                <p>🎯 Totale: {product.similarity?.toFixed(3)}</p>
+              </div>
+            )}
           </div>
-          ))}
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   );
 }

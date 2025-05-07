@@ -105,7 +105,7 @@ export const searchProducts = action({
           ? cosineSimilarity(userImageEmbedding, productImageEmbedding)
           : 0;
 
-        const finalScore = textScore * 0.2 + imageScore * 0.8;
+        const finalScore = textScore * 0.1 + imageScore * 0.9;
 
         return {
           ...product,
