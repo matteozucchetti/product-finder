@@ -6,10 +6,11 @@ export default function App() {
   const [prompt, setPrompt] = useState("");
   const [results, setResults] = useState<any[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
   const searchProducts = useAction(api.search.searchProducts);
   const allProducts = useQuery(api.products.getAllProducts) ?? [];
 
-  const handleSearch = async () => {
+  async function handleSearch() {
     if (prompt) {
       setIsLoading(true);
       const res = await searchProducts({ prompt });
@@ -19,6 +20,11 @@ export default function App() {
       setResults(null);
     }
   };
+
+  function handleClear() {
+    setPrompt("");
+    setResults(null);
+  }
 
   return (
     <div className="p-4 mx-auto">
@@ -39,6 +45,14 @@ export default function App() {
         >
           {isLoading ? "Searching..." : "Search"}
         </button>
+        {results && (
+          <button
+            onClick={handleClear}
+            className="bg-red-600 text-white px-4 py-2 rounded cursor-pointer"
+          >
+            Clear
+          </button>
+        )}
       </div>
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
