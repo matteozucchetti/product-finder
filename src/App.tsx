@@ -81,7 +81,7 @@ export default function App() {
                 <img src={product.imageUrl} alt={product.title} className="w-full h-40 object-contain mb-4" />
                 <CardTitle className="font-semibold w-full">{product.title}</CardTitle>
                 {results && (
-                  <div className="text-xs text-gray-500 mt-2 space-y-1">
+                  <div className="w-full text-xs text-gray-500 mt-2 space-y-1">
                     <p>🎯 Score: {product.similarity?.toFixed(3)}</p>
                   </div>
                 )}
