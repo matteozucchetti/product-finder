@@ -50,12 +50,9 @@ export default function App() {
               className="w-full h-40 object-contain mb-2"
             />
             <h2 className="font-semibold">{product.title}</h2>
-            <p className="text-sm text-gray-600">{product.description}</p>
             {results && (
               <div className="text-xs text-gray-500 mt-2 space-y-1">
-                <p>🧠 Text: {product.textScore?.toFixed(3)}</p>
-                <p>🖼️ Image: {product.imageScore?.toFixed(3)}</p>
-                <p>🎯 Total: {product.similarity?.toFixed(3)}</p>
+                <p>🎯 Score: {product.similarity?.toFixed(3)}</p>
               </div>
             )}
           </div>
