@@ -1,10 +1,11 @@
+import type { RegisteredAction } from 'convex/server';
 import { api } from './_generated/api';
 import { action } from './_generated/server';
 import { pollReplicatePrediction } from './utils/pollReplicatePrediction';
 
 const CLIP_MODEL_VERSION = '1c0371070cb827ec3c7f2f28adcdde54b50dcd239aa6faea0bc98b174ef03fb4';
 
-export const seedFromFakeStore = action(async (ctx) => {
+export const seedFromFakeStore: RegisteredAction<'public', {}, string> = action(async (ctx) => {
   // Fetch products from an example API
   const res = await fetch('https://fakestoreapi.com/products');
   const products = await res.json();
