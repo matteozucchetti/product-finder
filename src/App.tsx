@@ -31,19 +31,22 @@ export default function App() {
 
   return (
     <div className="p-4 mx-auto flex flex-col gap-4">
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">Product finder</h1>
+      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">AI Product Finder</h1>
 
       <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
-        Search for products by image with AI
+        This is a basic AI-powered product search demo.
       </h2>
 
       <p className="text-sm text-muted-foreground">
-        How it works:
+        Here’s how it works:
       </p>
       <ul className="ml-6 list-disc [&>li]:mt-2 text-sm text-muted-foreground">
-        <li>Below you can find a list of some sample products.</li>
-        <li>You can search for products by writing a prompt describing the product you are looking for.</li>
-        <li>AI will convert your prompt into a search query and return a list of products that match your search with a score.</li>
+        <li>You’ll see a list of sample products below coming from a one-time initial import.</li>
+        <li>Type in a prompt describing what you’re looking for (e.g. “Women's red T-shirt”).</li>
+        <li>The app is using a CLIP model running on Replicate</li>
+        <li>The model converts both your text prompt and each product image into high-dimensional vectors (embeddings).</li>
+        <li>These vectors are compared using cosine similarity to measure how “close” they are in meaning and appearance.</li>
+        <li>The products are then ranked by similarity score (from 0 to 1), and the top results are shown.</li>
       </ul>
 
       <div className="flex gap-2 mb-4">
@@ -51,7 +54,7 @@ export default function App() {
           type="text"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Red T-shirt for women"
+          placeholder="Women's red T-shirt"
           className="flex-1"
         />
         <Button
