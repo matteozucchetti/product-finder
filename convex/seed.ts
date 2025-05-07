@@ -9,7 +9,7 @@ const CLIP_MODEL_VERSION = "1c0371070cb827ec3c7f2f28adcdde54b50dcd239aa6faea0bc9
 export const seedFromFakeStore = action(async (ctx) => {
   const res = await fetch("https://fakestoreapi.com/products");
   const products = await res.json();
-  const productsToSeed = products.slice(0, 5);
+  const productsToSeed = products.slice(0, 20);
 
   for (const product of productsToSeed) {
     const embeddingRes = await openai.embeddings.create({

@@ -115,7 +115,7 @@ export const searchProducts = action({
         };
       })
       .sort((a, b) => (b.similarity ?? 0) - (a.similarity ?? 0))
-      .slice(0, 3);
+      .slice(0, 5);
 
     return ranked;
   },

@@ -22,14 +22,14 @@ export default function App() {
 
   return (
     <div className="p-4 mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Trova il prodotto perfetto</h1>
+      <h1 className="text-2xl font-bold mb-4">Product finder</h1>
 
       <div className="flex gap-2 mb-4">
         <input
           type="text"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Es: scarpe impermeabili da trekking"
+          placeholder="Red T-shirt for women"
           className="flex-1 border p-2 rounded"
         />
         <button
@@ -37,7 +37,7 @@ export default function App() {
           className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
           disabled={isLoading}
         >
-          {isLoading ? "Sto cercando..." : "Cerca"}
+          {isLoading ? "Searching..." : "Search"}
         </button>
       </div>
 
@@ -53,9 +53,9 @@ export default function App() {
             <p className="text-sm text-gray-600">{product.description}</p>
             {results && (
               <div className="text-xs text-gray-500 mt-2 space-y-1">
-                <p>🧠 Testo: {product.textScore?.toFixed(3)}</p>
-                <p>🖼️ Immagine: {product.imageScore?.toFixed(3)}</p>
-                <p>🎯 Totale: {product.similarity?.toFixed(3)}</p>
+                <p>🧠 Text: {product.textScore?.toFixed(3)}</p>
+                <p>🖼️ Image: {product.imageScore?.toFixed(3)}</p>
+                <p>🎯 Total: {product.similarity?.toFixed(3)}</p>
               </div>
             )}
           </div>
