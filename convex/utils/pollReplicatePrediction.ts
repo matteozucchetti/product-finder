@@ -11,6 +11,6 @@ export async function pollReplicatePrediction(id: string, token: string) {
     const checkJson = await check.json();
     status = checkJson.status;
     output = checkJson.output;
-  } while (status === "starting" || status === "processing");
+  } while (status === 'starting' || status === 'processing');
   return { status, output };
 }

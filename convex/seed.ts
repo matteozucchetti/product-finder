@@ -1,12 +1,12 @@
-import { action } from "./_generated/server";
-import { api } from "./_generated/api";
-import { pollReplicatePrediction } from "./utils/pollReplicatePrediction";
+import { api } from './_generated/api';
+import { action } from './_generated/server';
+import { pollReplicatePrediction } from './utils/pollReplicatePrediction';
 
-const CLIP_MODEL_VERSION = "1c0371070cb827ec3c7f2f28adcdde54b50dcd239aa6faea0bc98b174ef03fb4";
+const CLIP_MODEL_VERSION = '1c0371070cb827ec3c7f2f28adcdde54b50dcd239aa6faea0bc98b174ef03fb4';
 
 export const seedFromFakeStore = action(async (ctx) => {
   // Fetch products from an example API
-  const res = await fetch("https://fakestoreapi.com/products");
+  const res = await fetch('https://fakestoreapi.com/products');
   const products = await res.json();
 
   for (const product of products) {
@@ -16,17 +16,17 @@ export const seedFromFakeStore = action(async (ctx) => {
 
     try {
       // Generate image embedding via Replicate CLIP
-      const imagePredictionRes = await fetch("https://api.replicate.com/v1/predictions", {
-        method: "POST",
+      const imagePredictionRes = await fetch('https://api.replicate.com/v1/predictions', {
+        method: 'POST',
         headers: {
           Authorization: `Token ${process.env.REPLICATE_API_TOKEN!}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           version: CLIP_MODEL_VERSION,
           input: {
             image: product.image,
-            task: "embed_image",
+            task: 'embed_image',
           },
         }),
       });
@@ -34,10 +34,10 @@ export const seedFromFakeStore = action(async (ctx) => {
 
       const { status: imageStatus, output: imageResult } = await pollReplicatePrediction(
         imagePrediction.id,
-        process.env.REPLICATE_API_TOKEN!
+        process.env.REPLICATE_API_TOKEN!,
       );
-      if (imageStatus !== "succeeded") {
-        throw new Error("Error generating image embedding");
+      if (imageStatus !== 'succeeded') {
+        throw new Error('Error generating image embedding');
       }
       const imageEmbedding = imageResult.embedding;
 
@@ -53,5 +53,5 @@ export const seedFromFakeStore = action(async (ctx) => {
     }
   }
 
-  return "Seed completed!";
+  return 'Seed completed!';
 });

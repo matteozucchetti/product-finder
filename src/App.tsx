@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { useAction, useQuery } from "convex/react";
-import { api } from "../convex/_generated/api";
-import { Input } from "./components/ui/input";
-import { Button } from "./components/ui/button";
-import { Card, CardTitle, CardContent } from "./components/ui/card";
+import { useAction, useQuery } from 'convex/react';
+import { useState } from 'react';
+import { api } from '../convex/_generated/api';
+import { Button } from './components/ui/button';
+import { Card, CardContent, CardTitle } from './components/ui/card';
+import { Input } from './components/ui/input';
 
 export default function App() {
-  const [prompt, setPrompt] = useState("");
+  const [prompt, setPrompt] = useState('');
   const [results, setResults] = useState<any[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -25,7 +25,7 @@ export default function App() {
   }
 
   function handleClear() {
-    setPrompt("");
+    setPrompt('');
     setResults(null);
   }
 
@@ -37,15 +37,17 @@ export default function App() {
         This is a basic AI-powered product search demo.
       </h2>
 
-      <p className="text-sm text-muted-foreground">
-        Here's how it works:
-      </p>
+      <p className="text-sm text-muted-foreground">Here's how it works:</p>
       <ul className="ml-6 list-disc [&>li]:mt-2 text-sm text-muted-foreground">
         <li>You'll see a list of sample products below coming from a one-time initial import.</li>
         <li>Type in a prompt describing what you're looking for (e.g. "Women's red T-shirt").</li>
         <li>The app is using a CLIP model running on Replicate</li>
-        <li>The model converts both your text prompt and each product image into high-dimensional vectors (embeddings).</li>
-        <li>These vectors are compared using cosine similarity to measure how "close" they are in meaning and appearance.</li>
+        <li>
+          The model converts both your text prompt and each product image into high-dimensional vectors (embeddings).
+        </li>
+        <li>
+          These vectors are compared using cosine similarity to measure how "close" they are in meaning and appearance.
+        </li>
         <li>The products are then ranked by similarity score (from 0 to 1), and the top results are shown.</li>
       </ul>
 
@@ -57,17 +59,11 @@ export default function App() {
           placeholder="Women's red T-shirt"
           className="flex-1"
         />
-        <Button
-          onClick={handleSearch}
-          disabled={isLoading}
-        >
-          {isLoading ? "Searching..." : "Search"}
+        <Button onClick={handleSearch} disabled={isLoading}>
+          {isLoading ? 'Searching...' : 'Search'}
         </Button>
         {results && (
-          <Button
-            onClick={handleClear}
-            variant="destructive"
-          >
+          <Button onClick={handleClear} variant="destructive">
             Clear
           </Button>
         )}
@@ -82,11 +78,7 @@ export default function App() {
           (results ?? allProducts).map((product) => (
             <Card key={product._id} className="p-0">
               <CardContent className="p-4 flex flex-col items-center">
-                <img
-                  src={product.imageUrl}
-                  alt={product.title}
-                  className="w-full h-40 object-contain mb-4"
-                />
+                <img src={product.imageUrl} alt={product.title} className="w-full h-40 object-contain mb-4" />
                 <CardTitle className="font-semibold w-full">{product.title}</CardTitle>
                 {results && (
                   <div className="text-xs text-gray-500 mt-2 space-y-1">

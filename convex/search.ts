@@ -1,35 +1,35 @@
-import { action } from "./_generated/server";
-import { v } from "convex/values";
-import { api } from "./_generated/api";
-import type { Doc } from "./_generated/dataModel";
-import { pollReplicatePrediction } from "./utils/pollReplicatePrediction";
-import { cosineSimilarity } from "./utils/cosineSimilarity";
+import { v } from 'convex/values';
+import { api } from './_generated/api';
+import type { Doc } from './_generated/dataModel';
+import { action } from './_generated/server';
+import { cosineSimilarity } from './utils/cosineSimilarity';
+import { pollReplicatePrediction } from './utils/pollReplicatePrediction';
 
-type Product = Doc<"products"> & { similarity?: number };
+type Product = Doc<'products'> & { similarity?: number };
 type SearchProductsArgs = { prompt: string };
 type SearchProductsResult = Product[];
 
-const CLIP_MODEL_VERSION = "1c0371070cb827ec3c7f2f28adcdde54b50dcd239aa6faea0bc98b174ef03fb4";
+const CLIP_MODEL_VERSION = '1c0371070cb827ec3c7f2f28adcdde54b50dcd239aa6faea0bc98b174ef03fb4';
 
 // Get the prompt text embedding via CLIP
 async function getClipEmbeddingFromPrompt(prompt: string): Promise<number[]> {
-  const predictionRes = await fetch("https://api.replicate.com/v1/predictions", {
-    method: "POST",
+  const predictionRes = await fetch('https://api.replicate.com/v1/predictions', {
+    method: 'POST',
     headers: {
       Authorization: `Token ${process.env.REPLICATE_API_TOKEN!}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       version: CLIP_MODEL_VERSION,
       input: {
         text: prompt,
-        task: "embed_text",
+        task: 'embed_text',
       },
     }),
   });
   const prediction = await predictionRes.json();
   const { status, output } = await pollReplicatePrediction(prediction.id, process.env.REPLICATE_API_TOKEN!);
-  if (status !== "succeeded") throw new Error("CLIP embedding failed");
+  if (status !== 'succeeded') throw new Error('CLIP embedding failed');
   return output.embedding;
 }
 
