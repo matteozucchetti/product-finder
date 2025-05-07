@@ -1,17 +1,24 @@
-import { query } from "./_generated/server";
+import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { OpenAI } from "openai";
+import { api } from "./_generated/api";
+import type { Doc } from "./_generated/dataModel";
 
-// Carica la chiave da variabile d’ambiente
+// Carica la chiave da variabile d'ambiente
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
-export const searchProducts = query({
+type Product = Doc<"products"> & { similarity?: number };
+
+type SearchProductsArgs = { prompt: string };
+type SearchProductsResult = Product[];
+
+export const searchProducts = action({
   args: {
     prompt: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: any, args: SearchProductsArgs): Promise<SearchProductsResult> => {
     const { prompt } = args;
 
     // 1. Embedding del prompt con OpenAI
@@ -20,10 +27,10 @@ export const searchProducts = query({
       model: "text-embedding-3-small",
     });
 
-    const userVector = embeddingResponse.data[0].embedding;
+    const userVector: number[] = embeddingResponse.data[0].embedding;
 
-    // 2. Recupera tutti i prodotti
-    const products = await ctx.db.query("products").collect();
+    // 2. Recupera tutti i prodotti tramite query
+    const products: Product[] = await ctx.runQuery(api.products.getAllProducts, {});
 
     // 3. Calcola cosine similarity tra userVector e ogni embedding prodotto
     function cosineSimilarity(a: number[], b: number[]) {
@@ -33,12 +40,12 @@ export const searchProducts = query({
       return dot / (normA * normB);
     }
 
-    const ranked = products
-      .map((product) => ({
+    const ranked: Product[] = (products as Product[])
+      .map((product: Product) => ({
         ...product,
         similarity: cosineSimilarity(userVector, product.embedding),
       }))
-      .sort((a, b) => b.similarity - a.similarity)
+      .sort((a: Product, b: Product) => (b.similarity ?? 0) - (a.similarity ?? 0))
       .slice(0, 3); // Top 3
 
     return ranked;
