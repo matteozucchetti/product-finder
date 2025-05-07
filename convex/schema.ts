@@ -7,6 +7,7 @@ export default defineSchema({
     description: v.string(),
     imageUrl: v.string(),
     embedding: v.array(v.float64()), // vettore di embedding testuale
+    imageEmbedding: v.array(v.float64()), // vettore di embedding immagine
   }),
 
   queries: defineTable({

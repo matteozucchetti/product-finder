@@ -7,6 +7,7 @@ export const insertProduct = mutation({
         description: v.string(),
         imageUrl: v.string(),
         embedding: v.array(v.float64()),
+        imageEmbedding: v.array(v.float64()),
     },
     handler: async (ctx, args) => {
         await ctx.db.insert("products", args);

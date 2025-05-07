@@ -5,12 +5,15 @@ import { api } from "../convex/_generated/api";
 export default function App() {
   const [prompt, setPrompt] = useState("");
   const [results, setResults] = useState<any[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const searchProducts = useAction(api.search.searchProducts);
 
   const handleSearch = async () => {
     if (prompt) {
+      setIsLoading(true);
       const res = await searchProducts({ prompt });
       setResults(res);
+      setIsLoading(false);
     }
   };
 
@@ -29,8 +32,9 @@ export default function App() {
         <button
           onClick={handleSearch}
           className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
+          disabled={isLoading}
         >
-          Cerca
+          {isLoading ? "Sto cercando..." : "Cerca"}
         </button>
       </div>
 
@@ -38,11 +42,20 @@ export default function App() {
         <div className="grid gap-4">
           {results.map((product) => (
             <div key={product._id} className="border p-4 rounded shadow">
-              <img src={product.imageUrl} alt={product.title} className="w-full h-40 object-contain mb-2" />
-              <h2 className="font-semibold">{product.title}</h2>
-              <p className="text-sm text-gray-600">{product.description}</p>
-              <p className="text-xs text-gray-400 mt-1">Similarità: {product.similarity.toFixed(2)}</p>
+            <img
+              src={product.imageUrl}
+              alt={product.title}
+              className="w-full h-40 object-contain mb-2"
+            />
+            <h2 className="font-semibold">{product.title}</h2>
+            <p className="text-sm text-gray-600">{product.description}</p>
+
+            <div className="text-xs text-gray-500 mt-2 space-y-1">
+              <p>🧠 Testo: {product.textScore?.toFixed(3)}</p>
+              <p>🖼️ Immagine: {product.imageScore?.toFixed(3)}</p>
+              <p>🎯 Totale: {product.similarity?.toFixed(3)}</p>
             </div>
+          </div>
           ))}
         </div>
       )}
